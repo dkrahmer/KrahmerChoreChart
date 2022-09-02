@@ -60,11 +60,12 @@ function endOfDayEmailReport() {
 
   const sendToAssignees = assignees
     .filter(assignee => 
-      !!assignee[ASSIGNEES_COL_EMAIL - 1] 
-        && (assignee[ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE - 1] === "Always")
-          || (incompleteChores.length && assignee[ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE - 1] === "If any incomplete")
-          || (incompleteChores.length && assignee[ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE - 1] === "If own incomplete")
-              && incompleteChores.some(chore => chore.assignedTo === assignee[ASSIGNEES_COL_NAME - 1]))
+      !!assignee[ASSIGNEES_COL_EMAIL - 1]
+      && !assignee[ASSIGNEES_COL_EMAIL - 1].includes("?")
+      && ((assignee[ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE - 1] === "Always")
+        || (incompleteChores.length && assignee[ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE - 1] === "If any incomplete")
+        || (incompleteChores.length && assignee[ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE - 1] === "If own incomplete")
+          && incompleteChores.some(chore => chore.assignedTo === assignee[ASSIGNEES_COL_NAME - 1])))
     .map(assignee => {
       return {
         name: assignee[ASSIGNEES_COL_NAME - 1],
@@ -72,6 +73,9 @@ function endOfDayEmailReport() {
         email: assignee[ASSIGNEES_COL_EMAIL - 1]
       };
     });
+
+  if (sendToAssignees.length === 0)
+    return; // nothing to do
 
   let subject, message = "";
   if (incompleteChores.length) {
