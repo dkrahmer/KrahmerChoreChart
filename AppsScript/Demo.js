@@ -27,12 +27,26 @@ function disableDemoMode() {
 function setDemoMode(enable) {
   const triggerFunctionNames = ScriptApp.getProjectTriggers().map(t => t.getHandlerFunction());
   
+  scriptName = "markSingleTaskCompleteDemo";
+  if (triggerFunctionNames.includes(scriptName) !== enable) {
+    if (enable) {
+      ScriptApp.newTrigger(scriptName)
+        .timeBased().everyHours(1)
+        .create();
+      console.log(`Scheduled ${scriptName}`);
+    }
+    else {
+      deleteTriggerByScriptName(scriptName);
+    }
+  }
+  
   scriptName = "markAllTasksComplete";
   if (triggerFunctionNames.includes(scriptName) !== enable) {
     if (enable) {
       ScriptApp.newTrigger(scriptName)
-        .timeBased().everyDays(1).atHour(13)
+        .timeBased().everyDays(1).atHour(19)
         .create();
+      console.log(`Scheduled ${scriptName}`);
     }
     else {
       deleteTriggerByScriptName(scriptName);
@@ -40,3 +54,10 @@ function setDemoMode(enable) {
   }
 }
 
+function markSingleTaskCompleteDemo() {
+  const hour = new Date().getHours();
+  if (hour >= 19 || hour <= 5)
+    return; // do not mark tasks complete during this hour range
+
+  markTasksComplete(1);
+}

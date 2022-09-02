@@ -119,17 +119,24 @@ function cleanTasks(sheet) {
 }
 
 function markAllTasksComplete() {
+  markTasksComplete();
+}
+
+function markTasksComplete(maxCount) {
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
   value = true;
 
   const range = tasksSheet.getRange(2, TASKS_COL_COMPLETED, tasksSheet.getMaxRows() - 1, 2);
   const values = range.getValues();
-  for (let i = 0; i < values.length; i++) {
+  maxCount = maxCount ?? values.length;
+  let count = 0;
+  for (let i = 0; i < values.length && count < maxCount; i++) {
     const rowValues = values[i];
     if (rowValues[0] !== value) {
       rowValues[0] = value;
       rowValues[1] = value ? new Date() : "";
+      count++;
     }
   }
 
