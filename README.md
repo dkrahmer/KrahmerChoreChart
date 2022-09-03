@@ -2,10 +2,11 @@
 
 ## About
 Krahmer Chore Chart is a feature rich recurring task manager hosted in a Google Sheet using Apps Scripts for automation. Major features include:
-  - multiple user support
+  - multiple user support with color coding
   - unlimited recurring tasks
   - tasks automatically created each day
   - completed tasks automatically archived each day
+  - late tasks color coded
   - end of day email summary reports
 
 More information and a link to the latest official version of the Google Sheet can be found here: https://www.reddit.com/r/KrahmerChoreChart
