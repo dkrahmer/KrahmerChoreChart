@@ -24,6 +24,11 @@ Release History
 
 // ------------------ Begin Settings ------------------
 
+const EMAIL_REPORT_FROM_NAME = "Krahmer Chore Chart";
+
+// Allow tasks to be marked completed before their due date
+const ALLOW_EARLY_COMPLETION = false;
+
 // The number of "Assign to Next" columns
 // Set this number before adding additional "Assign to Next" columns to the "Recurring Tasks" tab.
 const ASSIGNED_TO_NEXT_COUNT = 2;
@@ -32,6 +37,7 @@ const TASK_DUE_DATE_FORMAT = 'mm"/"dd';
 const TASK_COMPLETED_DATE_FORMAT = `${TASK_DUE_DATE_FORMAT} hh":"mm" "am/pm`;
 const COMPLETED_TASK_DUE_DATE_FORMAT = 'mm"/"dd"/"yyyy (ddd)';
 const COMPLETED_TASK_COMPLETED_DATE_FORMAT = `${COMPLETED_TASK_DUE_DATE_FORMAT} hh":"mm" "am/pm`;
+const EMAIL_TASK_DUE_DATE_FORMAT = 'EEE, MM/dd/yyyy';
 
 const DAY_ABBREVIATIONS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
@@ -72,6 +78,7 @@ let ASSIGNEES_COL_COUNT = 0;
 const ASSIGNEES_COL_NAME = ++ASSIGNEES_COL_COUNT;
 const ASSIGNEES_COL_PROPER_NAME = ++ASSIGNEES_COL_COUNT;
 const ASSIGNEES_COL_EMAIL = ++ASSIGNEES_COL_COUNT;
+const ASSIGNEES_COL_START_OF_DAY_EMAIL_TYPE = ++ASSIGNEES_COL_COUNT;
 const ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE = ++ASSIGNEES_COL_COUNT;
 
 function initialize() {
@@ -115,6 +122,14 @@ function createTriggers() {
   if (!triggerFunctionNames.includes(scriptName)) {
     ScriptApp.newTrigger(scriptName)
       .forSpreadsheet(sheet).onChange()
+      .create();
+    console.log(`Scheduled ${scriptName}`);
+  }
+
+  scriptName = "startOfDayEmailReport";
+  if (!triggerFunctionNames.includes(scriptName)) {
+    ScriptApp.newTrigger(scriptName)
+      .timeBased().everyDays(1).atHour(4).nearMinute(0)
       .create();
     console.log(`Scheduled ${scriptName}`);
   }

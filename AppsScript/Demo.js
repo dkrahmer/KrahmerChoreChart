@@ -56,7 +56,7 @@ function setDemoMode(enable) {
 
 function markSingleTaskCompleteDemo() {
   const hour = new Date().getHours();
-  if (hour >= 19 || hour <= 5)
+  if (hour > 19 || hour < 5)
     return; // do not mark tasks complete during this hour range
 
   markTasksComplete(1);

@@ -83,7 +83,7 @@ function validateTasksSheet() {
     const completed = rowValues[1];
     const completedDate = rowValues[2];
 
-    if ((completed || !!completedDate) && dueDate > now) {  
+    if (!ALLOW_EARLY_COMPLETION && (completed || !!completedDate) && dueDate > now) {  
       console.log(`Task completed before due date`);
       const completedDateCell = tasksSheet.getRange(rowIndex + 2, TASKS_COL_COMPLETED_DATE);
       const completedCell = tasksSheet.getRange(rowIndex + 2, TASKS_COL_COMPLETED);
