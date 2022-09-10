@@ -26,7 +26,7 @@ function startOfDayEmailReport() {
   sendToAssignees.forEach(assignee => {
     let subject, message = `Hi ${assignee.properName},`;
 
-    personalizedIncompleteTasks = incompleteTasks.filter(t => t.assignedTo === assignee.name || t.assignedTo === "all" || t.assignedTo === "anybody")
+    personalizedIncompleteTasks = incompleteTasks.filter(t => isAssigned(t.assignedTo, assignee.name));
     const personalizedIncompleteLateTasks = personalizedIncompleteTasks.filter(t => t.when === "late");
     const personalizedIncompleteCurrentTasks = personalizedIncompleteTasks.filter(t => t.when === "current");
     const personalizedIncompleteFutureTasks = personalizedIncompleteTasks.filter(t => t.when === "future");
@@ -116,8 +116,8 @@ function endOfDayEmailReport() {
   sendToAssignees.forEach(assignee => {
     let subject, message = `Hi ${assignee.properName},`;
 
-    personalizedIncompleteTasks = incompleteTasks.filter(t => t.assignedTo === assignee.name)
-    personalizedCompleteTasks = completeTasks.filter(t => t.assignedTo === assignee.name)
+    personalizedIncompleteTasks = incompleteTasks.filter(t => isAssigned(t.assignedTo, assignee.name))
+    personalizedCompleteTasks = completeTasks.filter(t => isAssigned(t.assignedTo, assignee.name))
 
     if (assignee.personalized) {
       if (personalizedIncompleteTasks.length) {
@@ -218,7 +218,7 @@ function getSendToAssignees(incompleteTasks, emailTypeColumn) {
               (assignee[emailTypeColumn - 1] === "If own incomplete")
               || (assignee[emailTypeColumn - 1] === "Personalized - If own incomplete")
             )
-            && incompleteTasks.some(task => task.assignedTo === assignee[ASSIGNEES_COL_NAME - 1] || task.assignedTo === "all" || task.assignedTo === "anybody")
+            && incompleteTasks.some(task => isAssigned(task.assignedTo, assignee[ASSIGNEES_COL_NAME - 1]))
           )
         )
       )
@@ -232,4 +232,8 @@ function getSendToAssignees(incompleteTasks, emailTypeColumn) {
       };
     })
     .sort((a, b) => a.name >= b.name ? 1 : -1);
+}
+
+function isAssigned(taskAssignee, name) {
+  return taskAssignee === name || taskAssignee === "all" || taskAssignee === "anybody";
 }
