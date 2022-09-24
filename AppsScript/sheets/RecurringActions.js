@@ -35,6 +35,7 @@ function processRecurringActions() {
       action: recurringActionData[RECUR_ACTIONS_COL_ACTION - 1],
       parameters: recurringActionData[RECUR_ACTIONS_COL_PARAMETERS - 1],
       nextRunDate: recurringActionData[RECUR_ACTIONS_COL_NEXT_RUN_DATE - 1],
+      runAdjustDays: recurringActionData[RECUR_ACTIONS_COL_RUN_ADJUST_DAYS - 1],
       recurringDays: recurringActionData[RECUR_ACTIONS_COL_RECURRING_DAYS - 1],
       recurringMonths: recurringActionData[RECUR_ACTIONS_COL_RECURRING_MONTHS - 1],
       daysOfWeek: recurringActionData[RECUR_ACTIONS_COL_DAYS_OF_WEEK - 1],
@@ -71,6 +72,7 @@ function processRecurringActions() {
         recurringAction.action,
         recurringAction.parameters,
         recurringAction.nextRunDate,
+        recurringAction.runAdjustDays,
         recurringAction.recurringDays,
         recurringAction.recurringMonths,
         recurringAction.daysOfWeek,
@@ -90,21 +92,22 @@ function processRecurringAction(recurringAction) {
   const now = new Date();
   let resume = !(recurringAction.recurringDays == -1);
   do {
-    const nextAddDate = getNextRunDate(recurringAction, "nextRunDate");
+    const nextRunDate = getNextRunDate(recurringAction, "nextRunDate");
     
-    if (!nextAddDate || nextAddDate > now)
+    if (!nextRunDate || nextRunDate > now)
       break;
 
-    recurringAction.runDate = new Date(recurringAction.nextRunDate);
+    recurringAction.runDate = new Date(nextRunDate);
 
     // Run if it is the actual date, otherwise just advance to the next date
     if (now.getFullYear() === recurringAction.runDate.getFullYear()
         && now.getMonth() === recurringAction.runDate.getMonth()
-        && now.getDate() === recurringAction.runDate.getDate())
+        && now.getDate() === recurringAction.runDate.getDate()) {
       handleAction(recurringAction);
+      recurringAction.lastRunDate = recurringAction.runDate;
+    }
 
     advanceRecurringAction(recurringAction);
-    recurringAction.lastRunDate = recurringAction.runDate;
 
     newActions++;
   } while (resume);
@@ -119,14 +122,15 @@ function advanceRecurringAction(recurringAction, internalCall) {
     recurringAction.nextRunDate = "";
     return;
   }
+  const originalNextRunDate = recurringAction.nextRunDate;
   if (recurringAction.dayOccuranceInMonth)
     recurringAction.nextRunDate.setDate(1); // reset the day in case the next month has more days
 
   if (recurringAction.recurringMonths || recurringAction.dayOccuranceInMonth)
-    recurringAction.nextRunDate.setMonth(recurringAction.runDate.getMonth() + (recurringAction.recurringMonths || 1));
+    recurringAction.nextRunDate.setMonth(originalNextRunDate.getMonth() + (recurringAction.recurringMonths || 1));
 
   if (recurringAction.recurringDays || (!recurringAction.recurringMonths && !recurringAction.dayOccuranceInMonth))
-    recurringAction.nextRunDate.setDate(recurringAction.runDate.getDate() + (recurringAction.recurringDays || 1));
+    recurringAction.nextRunDate.setDate(originalNextRunDate.getDate() + (recurringAction.recurringDays || 1));
 
   if (recurringAction.dayOccuranceInMonth) {
     recurringAction.nextRunDate = getMonthDayOccurance(recurringAction.nextRunDate, recurringAction.daysOfWeek, recurringAction.dayOccuranceInMonth[0])

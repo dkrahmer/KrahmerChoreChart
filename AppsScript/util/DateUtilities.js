@@ -58,8 +58,12 @@ function getNextRunDate(recurringTask, propertyName) {
   if (!recurringTask[propertyName])
     return recurringTask[propertyName];
 
+  let runAdjustDays = recurringTask.runAdjustDays;
+  if (runAdjustDays)
+    runAdjustDays = -runAdjustDays;
+
   const nextRunDate = new Date(recurringTask[propertyName]);
-  nextRunDate.setDate(nextRunDate.getDate() - (recurringTask.createDaysBeforeDue ?? 0));
+  nextRunDate.setDate(nextRunDate.getDate() - (runAdjustDays ?? recurringTask.createDaysBeforeDue ?? 0));
   nextRunDate.setHours(0, 0, 0, 0);
   return nextRunDate;
 }
