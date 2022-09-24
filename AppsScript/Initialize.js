@@ -43,6 +43,7 @@ const DAY_ABBREVIATIONS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 const TASKS_SHEET_NAME = "Tasks";
 const RECURRING_TASKS_SHEET_NAME = "Recurring Tasks";
+const RECURRING_ACTIONS_SHEET_NAME = "Recurring Actions";
 const ARCHIVED_TASKS_SHEET_NAME = "Completed Tasks";
 const ASSIGNEES_SHEET_NAME = "Assignees";
 
@@ -74,6 +75,20 @@ const RECUR_TASKS_COL_DAY_OCCURANCE_IN_MONTH = ++RECUR_TASKS_COL_COUNT;
 const RECUR_TASKS_COL_END_DATE = ++RECUR_TASKS_COL_COUNT;
 const RECUR_TASKS_LAST_DUE_DATE = ++RECUR_TASKS_COL_COUNT;
 
+let RECUR_ACTIONS_COL_COUNT = 0;
+const RECUR_ACTIONS_COL_ENABLED = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_NAME = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_ACTION = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_PARAMETERS = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_NEXT_RUN_DATE = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_RECURRING_DAYS = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_RECURRING_MONTHS = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_DAYS_OF_WEEK = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_DAY_OCCURANCE_IN_MONTH = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_END_DATE = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_COL_NOTES = ++RECUR_ACTIONS_COL_COUNT;
+const RECUR_ACTIONS_LAST_RUN_DATE = ++RECUR_ACTIONS_COL_COUNT;
+
 let ASSIGNEES_COL_COUNT = 0;
 const ASSIGNEES_COL_NAME = ++ASSIGNEES_COL_COUNT;
 const ASSIGNEES_COL_PROPER_NAME = ++ASSIGNEES_COL_COUNT;
@@ -82,6 +97,7 @@ const ASSIGNEES_COL_START_OF_DAY_EMAIL_TYPE = ++ASSIGNEES_COL_COUNT;
 const ASSIGNEES_COL_END_OF_DAY_EMAIL_TYPE = ++ASSIGNEES_COL_COUNT;
 
 function initialize() {
+  console.log(`${getFuncName()}...`);
   saveSheetKey();
   deleteTasks();
   deleteArchive();
@@ -89,6 +105,7 @@ function initialize() {
 }
 
 function reinitialize() {
+  console.log(`${getFuncName()}...`);
   SCRIPT_PROP.deleteAllProperties();
 
   const triggers = ScriptApp.getProjectTriggers();
@@ -100,11 +117,13 @@ function reinitialize() {
 }
 
 function saveSheetKey() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.getActiveSpreadsheet();
   SCRIPT_PROP.setProperty("key", sheet.getId());
 }
 
 function createTriggers() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.getActiveSpreadsheet();
   let scriptName;
 
@@ -149,6 +168,14 @@ function createTriggers() {
       .create();
     console.log(`Scheduled ${scriptName}`);
   }
+
+  scriptName = "processRecurringActions";
+  if (!triggerFunctionNames.includes(scriptName)) {
+    ScriptApp.newTrigger(scriptName)
+      .timeBased().everyDays(1).atHour(0).nearMinute(0)
+      .create();
+    console.log(`Scheduled ${scriptName}`);
+  }
   
   scriptName = "processRecurringTasks";
   if (!triggerFunctionNames.includes(scriptName)) {
@@ -160,6 +187,7 @@ function createTriggers() {
 }
 
 function deleteTasks() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
 
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
@@ -167,6 +195,7 @@ function deleteTasks() {
 }
 
 function deleteArchive() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
 
   const archivedTasksSheet = sheet.getSheetByName(ARCHIVED_TASKS_SHEET_NAME);

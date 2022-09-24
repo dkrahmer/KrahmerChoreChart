@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function processAssigneeColors() {
+  console.log(`${getFuncName()}...`);
   console.log(`processAssigneeColors`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
 

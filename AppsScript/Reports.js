@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function startOfDayEmailReport() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasks = getTasks();
   const incompleteTasks = tasks
@@ -106,6 +107,7 @@ function startOfDayEmailReport() {
 }
 
 function endOfDayEmailReport() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const currentTasks = getTasks();
   const completeTasks = currentTasks.filter(t => t.completed);
@@ -158,6 +160,7 @@ function endOfDayEmailReport() {
 }
 
 function getTasks() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
 
@@ -200,6 +203,7 @@ function getAssignedTasksText(tasks, includeDate) {
 }
 
 function getSendToAssignees(incompleteTasks, emailTypeColumn) {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const assigneesSheet = sheet.getSheetByName(ASSIGNEES_SHEET_NAME);
   const assignees = assigneesSheet.getRange(2, 1, assigneesSheet.getMaxRows() - 1, ASSIGNEES_COL_COUNT).getValues();

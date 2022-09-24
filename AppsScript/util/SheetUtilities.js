@@ -23,6 +23,10 @@ function deleteSheetData(targetSheet, headerRows = 1) {
   targetSheet.deleteRows(headerRows + 1, 1);
 }
 
+function getFuncName() {
+   return getFuncName.caller.name
+}
+
 function deleteTriggerByScriptName(scriptName) {
   const triggers = ScriptApp.getProjectTriggers();
   for (var i = 0; i < triggers.length; i++) {

@@ -17,14 +17,17 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function enableDemoMode() {
+  console.log(`${getFuncName()}...`);
   setDemoMode(true);
 }
 
 function disableDemoMode() {
+  console.log(`${getFuncName()}...`);
   setDemoMode(false);
 }
 
 function setDemoMode(enable) {
+  console.log(`${getFuncName()}...`);
   const triggerFunctionNames = ScriptApp.getProjectTriggers().map(t => t.getHandlerFunction());
   
   scriptName = "markSingleTaskCompleteDemo";
@@ -55,6 +58,7 @@ function setDemoMode(enable) {
 }
 
 function markSingleTaskCompleteDemo() {
+  console.log(`${getFuncName()}...`);
   const hour = new Date().getHours();
   if (hour > 19 || hour < 5)
     return; // do not mark tasks complete during this hour range

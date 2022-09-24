@@ -54,14 +54,14 @@ function getMonthDayOccurance(startDate, daysOfWeek, occurance) {
   return workDate;
 }
 
-function getNextAddDate(recurringTask) {
-  if (!recurringTask.nextDueDate)
-    return recurringTask.nextDueDate;
+function getNextRunDate(recurringTask, propertyName) {
+  if (!recurringTask[propertyName])
+    return recurringTask[propertyName];
 
-  const nextAddDate = new Date(recurringTask.nextDueDate);
-  nextAddDate.setDate(nextAddDate.getDate() - (recurringTask.createDaysBeforeDue ?? 0));
-  nextAddDate.setHours(0, 0, 0, 0);
-  return nextAddDate;
+  const nextRunDate = new Date(recurringTask[propertyName]);
+  nextRunDate.setDate(nextRunDate.getDate() - (recurringTask.createDaysBeforeDue ?? 0));
+  nextRunDate.setHours(0, 0, 0, 0);
+  return nextRunDate;
 }
 
 function isValidDate(recurringTask, date) {

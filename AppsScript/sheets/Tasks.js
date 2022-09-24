@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function sortTasksSheet() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
 
@@ -28,7 +29,7 @@ function sortTasksSheet() {
 }
 
 function addTask(sheet, task) {
-  console.log(`addTask - ${task.name}`);
+  console.log(`${getFuncName()} - ${task.name}...`);
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
   const row = 2;
 
@@ -44,6 +45,7 @@ function addTask(sheet, task) {
 }
 
 function addTaskRow(sheet, targetSheet, row, taskValues, dueDateFormat, completedDateFormat) {
+  console.log(`${getFuncName()}...`);
   dueDateFormat = dueDateFormat ?? TASK_DUE_DATE_FORMAT;
   completedDateFormat = completedDateFormat ?? TASK_COMPLETED_DATE_FORMAT;
 
@@ -105,6 +107,7 @@ function validateTasksSheet() {
 }
 
 function cleanTasks(sheet) {
+  console.log(`${getFuncName()}...`);
   sheet = sheet ?? SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
   if (tasksSheet.getMaxRows() <= 2)
@@ -119,10 +122,12 @@ function cleanTasks(sheet) {
 }
 
 function markAllTasksComplete() {
+  console.log(`${getFuncName()}...`);
   markTasksComplete();
 }
 
 function markTasksComplete(maxCount) {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
   value = true;

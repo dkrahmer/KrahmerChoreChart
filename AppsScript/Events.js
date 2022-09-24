@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function onEditCustom(e) { // launched from the script scheduler
+  console.log(`${getFuncName()}...`);
   const lock = LockService.getScriptLock();
 
   try {
@@ -42,6 +43,9 @@ function onEditCustom(e) { // launched from the script scheduler
     else if (sourceSheetName == RECURRING_TASKS_SHEET_NAME) {
       processRecurringTasks();
     }
+    else if (sourceSheetName == RECURRING_ACTIONS_SHEET_NAME) {
+      processRecurringActions();
+    }
   }
   finally {
       SpreadsheetApp.flush();
@@ -50,12 +54,13 @@ function onEditCustom(e) { // launched from the script scheduler
 }
 
 function onChangeCustom(e) { // launched from the script scheduler
+  console.log(`${getFuncName()}...`);
   const lock = LockService.getScriptLock();
   
   try {
     lock.waitLock(10000);
   }
-  catch {
+  catch (ex) {
     console.error(ex);
     return;
   }

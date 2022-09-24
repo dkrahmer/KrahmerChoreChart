@@ -17,11 +17,11 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function processRecurringTasks() {
-  console.log("processRecurringTasks");
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const recurringTasksSheet = sheet.getSheetByName(RECURRING_TASKS_SHEET_NAME);
 
-  const skipRows = 1;
+  const skipRows = recurringTasksSheet.getFrozenRows();
   const rows = recurringTasksSheet.getMaxRows();
   const rowsRange = recurringTasksSheet.getRange(1 + skipRows, 1, rows - skipRows, RECUR_TASKS_COL_COUNT);
   const rowsValues = rowsRange.getValues();
@@ -65,7 +65,7 @@ function processRecurringTasks() {
       if (range.getValues()[0][RECUR_TASKS_COL_NAME - 1] != recurringTask.name)
         break; // the data row no longer matches. may have been edited while iterating.
 
-      // update recurring task recond in sheet
+      // update recurring task record in sheet
       range.setValues([[
         recurringTask.enabled,
         recurringTask.isNeedNow,
@@ -88,7 +88,7 @@ function processRecurringTasks() {
 }
 
 function processRecurringTask(sheet, recurringTask) {
-  console.log(`processRecurringTask - ${recurringTask?.name}`);
+  console.log(`${getFuncName()} - ${recurringTask?.name}...`);
   let newTasks = 0;
 
   const now = new Date();
@@ -100,7 +100,7 @@ function processRecurringTask(sheet, recurringTask) {
       recurringTask.nextDueDate.setHours(0, 0, 0, 0);
     }
     else {
-      const nextAddDate = getNextAddDate(recurringTask);
+      const nextAddDate = getNextRunDate(recurringTask, "nextDueDate");
       
       if (!nextAddDate || nextAddDate > now)
         break;
@@ -118,6 +118,7 @@ function processRecurringTask(sheet, recurringTask) {
 }
 
 function advanceRecurringTask(recurringTask) {
+  console.log(`${getFuncName()}...`);
   if (recurringTask.assignedToArray[1]) {
     const assignedTo = recurringTask.assignedToArray.shift();
     const insertIndex = recurringTask.assignedToArray.indexOf("");
@@ -164,5 +165,74 @@ function advanceRecurringTask(recurringTask) {
 
   if (recurringTask.endDate && recurringTask.nextDueDate > recurringTask.endDate) {
     recurringTask.nextDueDate = ""; // the task has ended
+  }
+}
+
+function addDaysToRecurringTask(taskName, daysToAdd) {
+  console.log(`${getFuncName()}...`);
+  const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
+  const recurringTasksSheet = sheet.getSheetByName(RECURRING_TASKS_SHEET_NAME);
+
+  const skipRows = recurringTasksSheet.getFrozenRows();
+  const rows = recurringTasksSheet.getMaxRows();
+  const rowsRange = recurringTasksSheet.getRange(1 + skipRows, 1, rows - skipRows, RECUR_TASKS_COL_COUNT);
+  const rowsValues = rowsRange.getValues();
+
+  // processing in reverse order will retain the relative task order since we insert to the top of the task list
+  for (let row = rows; row >= 1 + skipRows; row--) {
+    const recurringTaskData = rowsValues[row - (1 + skipRows)];
+    const recurringTask = {
+      enabled: recurringTaskData[RECUR_TASKS_COL_ENABLED - 1],
+      isNeedNow: recurringTaskData[RECUR_TASKS_COL_DAY_NEED_NOW - 1],
+      name: recurringTaskData[RECUR_TASKS_COL_NAME - 1],
+      assignedToArray: [recurringTaskData[RECUR_TASKS_COL_ASSIGNED_TO - 1]],
+      nextDueDate: recurringTaskData[RECUR_TASKS_COL_NEXT_DUE_DATE - 1],
+      createDaysBeforeDue: recurringTaskData[RECUR_TASKS_COL_CREATE_DAYS_BEFORE_DUE - 1],
+      recurringDays: recurringTaskData[RECUR_TASKS_COL_RECURRING_DAYS - 1],
+      recurringMonths: recurringTaskData[RECUR_TASKS_COL_RECURRING_MONTHS - 1],
+      daysOfWeek: recurringTaskData[RECUR_TASKS_COL_DAYS_OF_WEEK - 1],
+      dayOccuranceInMonth: recurringTaskData[RECUR_TASKS_COL_DAY_OCCURANCE_IN_MONTH - 1],
+      endDate: recurringTaskData[RECUR_TASKS_COL_END_DATE - 1],
+      lastDueDate: recurringTaskData[RECUR_TASKS_LAST_DUE_DATE - 1]
+    }
+
+    for (let colIndex = RECUR_TASKS_COL_ASSIGNED_TO + 1; colIndex <= RECUR_TASKS_COL_ASSIGNED_TO_NEXT; colIndex++) {
+      recurringTask.assignedToArray.push(recurringTaskData[colIndex - 1]);
+    }
+
+    if (!recurringTask.name)
+      continue; // no name
+
+    if (!recurringTask.enabled && !recurringTask.isNeedNow)
+      continue; // not enabled
+
+    if (!recurringTask.nextDueDate && !recurringTask.isNeedNow)
+      continue; // no next date
+    
+    if (recurringTask.name !== taskName)
+      continue;
+
+    recurringTask.nextDueDate.setDate(recurringTask.nextDueDate.getDate() + daysToAdd);
+
+    const range = recurringTasksSheet.getRange(row, 1, 1, RECUR_TASKS_COL_COUNT);
+
+    if (range.getValues()[0][RECUR_TASKS_COL_NAME - 1] != recurringTask.name)
+      break; // the data row no longer matches. may have been edited while iterating.
+
+    // update recurring task record in sheet
+    range.setValues([[
+      recurringTask.enabled,
+      recurringTask.isNeedNow,
+      recurringTask.name,
+      ...recurringTask.assignedToArray,
+      recurringTask.nextDueDate,
+      recurringTask.createDaysBeforeDue,
+      recurringTask.recurringDays,
+      recurringTask.recurringMonths,
+      recurringTask.daysOfWeek,
+      recurringTask.dayOccuranceInMonth,
+      recurringTask.endDate,
+      recurringTask.lastDueDate
+    ]]);
   }
 }

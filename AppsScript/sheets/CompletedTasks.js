@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 ************************************************************************************************************/
 
 function sortArchivedTasksSheet() {
+  console.log(`${getFuncName()}...`);
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const archivedTasksSheet = sheet.getSheetByName(ARCHIVED_TASKS_SHEET_NAME);
 
@@ -26,11 +27,12 @@ function sortArchivedTasksSheet() {
 }
 
 function archiveCompletedTasks() {
+  console.log(`${getFuncName()}...`);
   archiveCompletedTasksInternal();
 }
 
 function archiveCompletedTasksInternal(all) {
-  console.log(`archiveCompletedTasksInternal`);
+  console.log(`${getFuncName()}...`);
   sortTasksSheet();
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
