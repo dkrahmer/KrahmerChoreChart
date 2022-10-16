@@ -31,7 +31,7 @@ function sortTasksSheet() {
 function addTask(sheet, task) {
   console.log(`${getFuncName()} - ${task.name}...`);
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
-  const row = 2;
+  const row = tasksSheet.getFrozenRows() + 1;
 
   const taskValues = [
     task.name,
@@ -76,7 +76,7 @@ function validateTasksSheet() {
   const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
 
-  const dueCells = tasksSheet.getRange(2, TASKS_COL_DUE_DATE, tasksSheet.getMaxRows() - 1, TASKS_COL_COMPLETED_DATE - TASKS_COL_DUE_DATE + 1);
+  const dueCells = tasksSheet.getRange(tasksSheet.getFrozenRows() + 1, TASKS_COL_DUE_DATE, tasksSheet.getMaxRows() - 1, TASKS_COL_COMPLETED_DATE - TASKS_COL_DUE_DATE + 1);
   const dueValues = dueCells.getValues();
   const now = new Date();
   for (let rowIndex = 0; rowIndex < dueValues.length; rowIndex++) {
@@ -110,13 +110,15 @@ function cleanTasks(sheet) {
   console.log(`${getFuncName()}...`);
   sheet = sheet ?? SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
   const tasksSheet = sheet.getSheetByName(TASKS_SHEET_NAME);
-  if (tasksSheet.getMaxRows() <= 2)
+  const frozenRows = tasksSheet.getFrozenRows();
+  
+  if (tasksSheet.getMaxRows() <= frozenRows + 1)
     return;
 
-  const values = tasksSheet.getRange(2, TASKS_COL_NAME, tasksSheet.getMaxRows() - 1, 1).getValues();
+  const values = tasksSheet.getRange(frozenRows + 1, TASKS_COL_NAME, tasksSheet.getMaxRows() - 1, 1).getValues();
   for (let i = values.length - 1; i >= 0; i--) {
     if (!values[i][0]) {
-      tasksSheet.deleteRow(i + 2);
+      tasksSheet.deleteRow(i + frozenRows + 1);
     }
   }
 }

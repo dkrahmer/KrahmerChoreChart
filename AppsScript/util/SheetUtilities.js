@@ -35,3 +35,11 @@ function deleteTriggerByScriptName(scriptName) {
       ScriptApp.deleteTrigger(trigger);
   }
 }
+
+function updateTick() {
+  console.log(`${getFuncName()}...`);
+  const sheet = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
+  const tickSheet = sheet.getSheetByName(TICK_SHEET_NAME);
+  const range = tickSheet.getRange(1, 1);
+  range.setValue(new Date());
+}

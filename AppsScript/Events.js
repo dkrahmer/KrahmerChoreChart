@@ -56,7 +56,7 @@ function onEditCustom(e) { // launched from the script scheduler
 function onChangeCustom(e) { // launched from the script scheduler
   console.log(`${getFuncName()}...`);
   const lock = LockService.getScriptLock();
-  
+
   try {
     lock.waitLock(10000);
   }

@@ -46,6 +46,7 @@ const RECURRING_TASKS_SHEET_NAME = "Recurring Tasks";
 const RECURRING_ACTIONS_SHEET_NAME = "Recurring Actions";
 const ARCHIVED_TASKS_SHEET_NAME = "Completed Tasks";
 const ASSIGNEES_SHEET_NAME = "Assignees";
+const TICK_SHEET_NAME = "Tick";
 
 // ------------------ End Settings ------------------
 
@@ -182,6 +183,14 @@ function createTriggers() {
   if (!triggerFunctionNames.includes(scriptName)) {
     ScriptApp.newTrigger(scriptName)
       .timeBased().everyDays(1).atHour(1).nearMinute(15)
+      .create();
+    console.log(`Scheduled ${scriptName}`);
+  }
+  
+  scriptName = "updateTick";
+  if (!triggerFunctionNames.includes(scriptName)) {
+    ScriptApp.newTrigger(scriptName)
+      .timeBased().everyDays(1).atHour(0).nearMinute(0)
       .create();
     console.log(`Scheduled ${scriptName}`);
   }
